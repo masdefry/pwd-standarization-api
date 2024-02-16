@@ -53,10 +53,10 @@ export const login = async(req: Request, res: Response, next: NextFunction): Pro
         if(isComparePassword === false) throw {message: 'Password Doesnt Match'}
         
         /*
-            accessToken: Digunakan untuk mengambil resource
+            accessToken: Digunakan untuk mengambil resource (Token Utama)
             refreshToken: Digunakan untuk authorization 
 
-            Mengapa expiry date refreshToken lebih lama dari accessToken?
+            Mengapa expiry date accessToken hanya sebentar dibanding refreshToken?
             Untuk menghindari pencurian token/penyalahgunaan token. Sehingga
             accessToken harus sering diperbarui. 
 

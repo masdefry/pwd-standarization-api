@@ -58,10 +58,10 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
         if (isComparePassword === false)
             throw { message: 'Password Doesnt Match' };
         /*
-            accessToken: Digunakan untuk mengambil resource
+            accessToken: Digunakan untuk mengambil resource (Token Utama)
             refreshToken: Digunakan untuk authorization
 
-            Mengapa expiry date refreshToken lebih lama dari accessToken?
+            Mengapa expiry date accessToken hanya sebentar dibanding refreshToken?
             Untuk menghindari pencurian token/penyalahgunaan token. Sehingga
             accessToken harus sering diperbarui.
 
