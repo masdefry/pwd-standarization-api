@@ -4,7 +4,7 @@ import {Request, Response, NextFunction} from 'express';
 import prisma from '../connection';
 
 import { hashPassword, hashMatch } from '../lib/HashPassword';
-import { jwtCreate } from '../lib/JWT';
+import { jwtCreate, jwtVerify } from '../lib/JWT';
 
 export const register = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -23,8 +23,6 @@ export const register = async(req: Request, res: Response, next: NextFunction): 
             }
         })
 
-        const token = await jwtCreate({id: createUser.id, role: createUser.role})
-
         res.status(200).send({
             error: false, 
             message: 'Register Success',
@@ -39,7 +37,7 @@ export const login = async(req: Request, res: Response, next: NextFunction): Pro
     try {
         const {email, password} = req.body
   
-        const admin = await prisma.users.findFirst({
+        const user = await prisma.users.findFirst({
             where: {
                 OR: [
                     {email: email}, 
@@ -48,20 +46,53 @@ export const login = async(req: Request, res: Response, next: NextFunction): Pro
             }
         })
         
-        if(admin === null) throw {message: 'Username or Email Not Found'}
+        if(user === null) throw {message: 'Username or Email Not Found'}
 
-        const isComparePassword = await hashMatch(password, admin.password)
+        const isComparePassword = await hashMatch(password, user.password)
         
         if(isComparePassword === false) throw {message: 'Password Doesnt Match'}
         
-        const token = await jwtCreate({id: admin.id, role: admin.role})
-    
+        /*
+            accessToken: Digunakan untuk mengambil resource
+            refreshToken: Digunakan untuk authorization 
+
+            Mengapa expiry date refreshToken lebih lama dari accessToken?
+            Untuk menghindari pencurian token/penyalahgunaan token. Sehingga
+            accessToken harus sering diperbarui. 
+
+            Dalam implementasinya, ketika accessToken expired, maka 
+            client akan mengirimkan refreshToken untuk generate accessToken
+            baru. Sehingga user tidak perlu login ulang untuk mendapatkan
+            accessToken yang baru. 
+        */
+        const accessToken = await jwtCreate({id: user.id, role: user.role, expiryIn: '1h'})
+        const refreshToken = await jwtCreate({id: user.id, role: user.role, expiryIn: '7d'})
+        
+        /*
+            Untuk mendapatkan expiry date dari accessToken dan refreshToken.
+            Kegunaannya untuk pengecekan di sisi frontend, 
+            supaya tidak perlu selalu request ke backend untuk pengecekan
+            token nya sudah expired atau belum. Apabila
+            token expired, maka dari sisi frontend perlu
+            melakukan request generate token baru. 
+        */
+        const expAccessToken = await jwtVerify(accessToken)
+        const expRefreshToken = await jwtVerify(refreshToken)
+        
         res.status(200).send({
             error: false, 
             message: 'Login Success', 
             data: {
-                username: admin.username,
-                token
+                username: user.username,
+                role: user.role,
+                accessToken: {
+                    token: accessToken,
+                    expiry:  expAccessToken.exp
+                },
+                refreshToken: {
+                    token: refreshToken, 
+                    expiry: expRefreshToken.exp
+                }
             }
         })
     } catch (error) {

@@ -14,9 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.jwtVerify = exports.jwtCreate = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const jwtCreate = ({ id, role }) => __awaiter(void 0, void 0, void 0, function* () {
+const jwtCreate = ({ id, role, expiryIn }) => __awaiter(void 0, void 0, void 0, function* () {
     return jsonwebtoken_1.default.sign({ id, role }, 'abc123', {
-        expiresIn: '1h'
+        expiresIn: expiryIn
     });
 });
 exports.jwtCreate = jwtCreate;
