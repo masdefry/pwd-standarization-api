@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.regenerateToken = exports.accessTokenVerify = exports.refreshTokenVerify = void 0;
 const JWT_1 = require("../lib/JWT");
 const JWT_2 = require("../lib/JWT");
+const auth_1 = require("../services/auth");
 const refreshTokenVerify = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const token = req.headers.authrefreshkey;
@@ -27,6 +28,9 @@ exports.refreshTokenVerify = refreshTokenVerify;
 const accessTokenVerify = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const token = req.headers.authaccesskey;
+        const validateResult = yield (0, auth_1.validateAccessKey)({ accessToken: token });
+        if (!validateResult)
+            throw { denied: true, message: 'Access Key Not Valid!' };
         const decodedAccessPayload = yield (0, JWT_1.jwtVerify)(token);
         if (decodedAccessPayload.role !== 'USER')
             throw { denied: true, message: 'Access Denied!' };
@@ -45,7 +49,11 @@ const regenerateToken = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
         let decodedRefreshPayload = req.decodedRefreshPayload;
         let decodedAccessPayload = req.decodedAccessPayload;
         if (!decodedAccessPayload && decodedRefreshPayload) {
-            let accessToken = yield (0, JWT_2.jwtCreate)({ id: decodedRefreshPayload.id, role: decodedRefreshPayload.role, expiryIn: '30s' });
+            let accessToken = yield (0, JWT_2.jwtCreate)({ id: decodedRefreshPayload.id, role: decodedRefreshPayload.role, expiryIn: '300s' });
+            yield (0, auth_1.saveAccessKey)({
+                accessToken: accessToken.token,
+                userId: decodedRefreshPayload.id
+            });
             req.decodedAccessPayload = decodedRefreshPayload;
             req.newAccessToken = accessToken;
         }

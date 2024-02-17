@@ -7,9 +7,13 @@ interface IJWTCreate {
 }
 
 export const jwtCreate = async({id, role, expiryIn}: IJWTCreate) => {
-    return jsonwebtoken.sign({id, role}, 'abc123', {
+    const token = jsonwebtoken.sign({id, role}, 'abc123', {
         expiresIn: expiryIn
     })
+
+    const expiry: any = await jwtVerify(token)
+
+    return { token, expiry }
 }
 
 export const jwtVerify = async(token: string) => {

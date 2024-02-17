@@ -5,6 +5,12 @@ export interface ICreateUser{
     role: string;
 }
 
+export interface ISaveAccessKey{
+    accessToken: string;
+    userId: string;
+}
+
+
 export interface IFindUser{
     email: string;
 }

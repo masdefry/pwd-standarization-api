@@ -10,6 +10,6 @@ import * as ProductController from './../controllers/ProductController';
 import { refreshTokenVerify } from '../middleware/TokenVerify';
 import { UploadValidator } from '../middleware/UploadValidator';
 
-route.post('/', refreshTokenVerify, UploadValidator, ProductController.create)
+route.post('/', refreshTokenVerify, UploadValidator, ProductController.createProduct)
 
 export default route

@@ -31,5 +31,5 @@ const ProductController = __importStar(require("./../controllers/ProductControll
 // Import Middleware
 const TokenVerify_1 = require("../middleware/TokenVerify");
 const UploadValidator_1 = require("../middleware/UploadValidator");
-route.post('/', TokenVerify_1.refreshTokenVerify, UploadValidator_1.UploadValidator, ProductController.create);
+route.post('/', TokenVerify_1.refreshTokenVerify, UploadValidator_1.UploadValidator, ProductController.createProduct);
 exports.default = route;

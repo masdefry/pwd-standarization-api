@@ -12,9 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createProduct = void 0;
+exports.createProductService = void 0;
 const connection_1 = __importDefault(require("../../connection"));
-const createProduct = ({ req, name, price, description, stock }) => __awaiter(void 0, void 0, void 0, function* () {
+const createProductService = ({ req, name, price, description, stock }) => __awaiter(void 0, void 0, void 0, function* () {
     yield connection_1.default.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
         const { id } = yield tx.products.create({
             data: {
@@ -33,4 +33,4 @@ const createProduct = ({ req, name, price, description, stock }) => __awaiter(vo
         });
     }));
 });
-exports.createProduct = createProduct;
+exports.createProductService = createProductService;

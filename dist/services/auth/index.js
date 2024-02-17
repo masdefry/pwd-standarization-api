@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findUser = exports.createUser = void 0;
+exports.findUser = exports.saveAccessKey = exports.validateAccessKey = exports.createUser = void 0;
 const connection_1 = __importDefault(require("../../connection"));
 const createUser = ({ email, username, hashedPassword, role }) => __awaiter(void 0, void 0, void 0, function* () {
     return yield connection_1.default.users.create({
@@ -25,6 +25,25 @@ const createUser = ({ email, username, hashedPassword, role }) => __awaiter(void
     });
 });
 exports.createUser = createUser;
+const validateAccessKey = ({ accessToken }) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield connection_1.default.users.findFirst({
+        where: {
+            accessKey: accessToken
+        }
+    });
+});
+exports.validateAccessKey = validateAccessKey;
+const saveAccessKey = ({ accessToken, userId }) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield connection_1.default.users.update({
+        data: {
+            accessKey: accessToken
+        },
+        where: {
+            id: userId
+        }
+    });
+});
+exports.saveAccessKey = saveAccessKey;
 const findUser = ({ email }) => __awaiter(void 0, void 0, void 0, function* () {
     return yield connection_1.default.users.findFirst({
         where: {

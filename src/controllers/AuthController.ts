@@ -1,8 +1,8 @@
 // Handle Request & Response
 import {Request, Response, NextFunction} from 'express';
 import { hashPassword, hashMatch } from '../lib/HashPassword';
-import { createUser, findUser } from '../services/auth';
-import { jwtCreate, jwtVerify } from '../lib/JWT';
+import { createUser, findUser, saveAccessKey } from '../services/auth';
+import { jwtCreate } from '../lib/JWT';
 import { responseHandler } from '../helpers/ResponseHandler';
 
 export const register = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -48,7 +48,7 @@ export const login = async(req: Request, res: Response, next: NextFunction): Pro
             baru. Sehingga user tidak perlu login ulang untuk mendapatkan
             accessToken yang baru. 
         */
-        const accessToken = await jwtCreate({id: user.id, role: user.role, expiryIn: '10s'})
+        const accessToken = await jwtCreate({id: user.id, role: user.role, expiryIn: '300s'})
         const refreshToken = await jwtCreate({id: user.id, role: user.role, expiryIn: '500s'})
         
         /*
@@ -59,23 +59,20 @@ export const login = async(req: Request, res: Response, next: NextFunction): Pro
             token expired, maka dari sisi frontend perlu
             melakukan request generate token baru. 
         */
-        const expAccessToken: any = await jwtVerify(accessToken)
-        const expRefreshToken: any = await jwtVerify(refreshToken)
 
+        const a = await saveAccessKey({
+            accessToken: accessToken.token,
+            userId: user.id
+        })
+        console.log(a)
         responseHandler({
             res: res,
             message: 'Login Success!',
             data:  {
                 username: user.username,
                 role: user.role,
-                accessToken: {
-                    token: accessToken,
-                    expiry:  expAccessToken.exp
-                },
-                refreshToken: {
-                    token: refreshToken, 
-                    expiry: expRefreshToken.exp
-                }
+                accessToken,
+                refreshToken
             }
         })
     } catch (error) {

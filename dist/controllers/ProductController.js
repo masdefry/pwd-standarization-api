@@ -12,15 +12,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.create = void 0;
+exports.createProduct = void 0;
 const index_1 = require("./../services/products/index");
 const ResponseHandler_1 = require("../helpers/ResponseHandler");
 const connection_1 = __importDefault(require("../connection"));
 const fs_1 = __importDefault(require("fs"));
-const create = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const createProduct = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { name, price, description, stock } = JSON.parse(req.body.dataProduct);
-        yield (0, index_1.createProduct)({
+        yield (0, index_1.createProductService)({
             req,
             name,
             price,
@@ -46,4 +46,4 @@ const create = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
         connection_1.default.$disconnect();
     }
 });
-exports.create = create;
+exports.createProduct = createProduct;

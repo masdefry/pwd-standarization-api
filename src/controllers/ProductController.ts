@@ -1,15 +1,15 @@
 // Handle Request & Response
 import {Request, Response, NextFunction} from 'express';
-import { createProduct } from './../services/products/index';
+import { createProductService } from './../services/products/index';
 import { responseHandler } from '../helpers/ResponseHandler';
 import prisma from '../connection';
 import fs from 'fs';
 
-export const create = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const createProduct = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const {name, price, description, stock} = JSON.parse(req.body.dataProduct)
 
-            await createProduct({
+            await createProductService({
                 req, 
                 name, 
                 price, 

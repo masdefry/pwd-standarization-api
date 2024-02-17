@@ -1,15 +1,15 @@
 import {Request, Response, NextFunction} from 'express';
 import { responseHandler } from '../helpers/ResponseHandler';
-import { createAddress } from '../services/user';
+import { createAddressService, findAddressesService } from '../services/user';
 
-export const create = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const createAddress = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const decodedAccessPayload = (req as any).decodedAccessPayload
         const newAccessToken = (req as any).newAccessToken
 
         const { receiver, phoneNumber, address } = req.body
 
-        const createdAddress = await createAddress({
+        const createdAddress = await createAddressService({
             req, 
             id: decodedAccessPayload.id,
             receiver, 
@@ -23,6 +23,29 @@ export const create = async(req: Request, res: Response, next: NextFunction): Pr
             message: 'Create Address Success!',
             data: {
                 createdAddress, 
+                newAccessToken: newAccessToken || null
+            }
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const findAddresses = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const decodedAccessPayload = (req as any).decodedAccessPayload;
+        const newAccessToken = (req as any).newAccessToken;
+
+        const addresses = await findAddressesService({
+            req, 
+            id: decodedAccessPayload.id
+        })
+
+        responseHandler({
+            res: res,
+            message: 'Find Address Success!',
+            data: {
+                addresses, 
                 newAccessToken: newAccessToken || null
             }
         })

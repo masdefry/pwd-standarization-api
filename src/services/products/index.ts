@@ -1,7 +1,7 @@
 import prisma from '../../connection';
 import { ICreateProductProps } from './types';
 
-export const createProduct = async({
+export const createProductService = async({
     req, 
     name, 
     price, 

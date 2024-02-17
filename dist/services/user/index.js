@@ -12,9 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createAddress = void 0;
+exports.findAddressesService = exports.createAddressService = void 0;
 const connection_1 = __importDefault(require("../../connection"));
-const createAddress = ({ req, id, receiver, phoneNumber, address }) => __awaiter(void 0, void 0, void 0, function* () {
+const createAddressService = ({ req, id, receiver, phoneNumber, address }) => __awaiter(void 0, void 0, void 0, function* () {
     return yield connection_1.default.address.create({
         data: {
             receiver,
@@ -24,4 +24,12 @@ const createAddress = ({ req, id, receiver, phoneNumber, address }) => __awaiter
         }
     });
 });
-exports.createAddress = createAddress;
+exports.createAddressService = createAddressService;
+const findAddressesService = ({ req, id }) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield connection_1.default.address.findMany({
+        where: {
+            usersId: id
+        }
+    });
+});
+exports.findAddressesService = findAddressesService;

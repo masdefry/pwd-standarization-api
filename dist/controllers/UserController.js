@@ -9,15 +9,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.create = void 0;
+exports.findAddresses = exports.createAddress = void 0;
 const ResponseHandler_1 = require("../helpers/ResponseHandler");
 const user_1 = require("../services/user");
-const create = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const createAddress = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const decodedAccessPayload = req.decodedAccessPayload;
         const newAccessToken = req.newAccessToken;
         const { receiver, phoneNumber, address } = req.body;
-        const createdAddress = yield (0, user_1.createAddress)({
+        const createdAddress = yield (0, user_1.createAddressService)({
             req,
             id: decodedAccessPayload.id,
             receiver,
@@ -38,4 +38,26 @@ const create = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
         next(error);
     }
 });
-exports.create = create;
+exports.createAddress = createAddress;
+const findAddresses = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const decodedAccessPayload = req.decodedAccessPayload;
+        const newAccessToken = req.newAccessToken;
+        const addresses = yield (0, user_1.findAddressesService)({
+            req,
+            id: decodedAccessPayload.id
+        });
+        (0, ResponseHandler_1.responseHandler)({
+            res: res,
+            message: 'Find Address Success!',
+            data: {
+                addresses,
+                newAccessToken: newAccessToken || null
+            }
+        });
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.findAddresses = findAddresses;

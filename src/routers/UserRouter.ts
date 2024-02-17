@@ -9,6 +9,7 @@ import * as UserController from './../controllers/UserController';
 // Import Middleware
 import { refreshTokenVerify, accessTokenVerify, regenerateToken } from '../middleware/TokenVerify';
 
-route.post('/', refreshTokenVerify, accessTokenVerify, regenerateToken, UserController.create)
+route.post('/address', refreshTokenVerify, accessTokenVerify, regenerateToken, UserController.createAddress)
+route.get('/address', refreshTokenVerify, accessTokenVerify, regenerateToken, UserController.findAddresses)
 
 export default route

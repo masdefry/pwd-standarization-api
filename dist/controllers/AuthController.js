@@ -52,7 +52,7 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
             baru. Sehingga user tidak perlu login ulang untuk mendapatkan
             accessToken yang baru.
         */
-        const accessToken = yield (0, JWT_1.jwtCreate)({ id: user.id, role: user.role, expiryIn: '10s' });
+        const accessToken = yield (0, JWT_1.jwtCreate)({ id: user.id, role: user.role, expiryIn: '300s' });
         const refreshToken = yield (0, JWT_1.jwtCreate)({ id: user.id, role: user.role, expiryIn: '500s' });
         /*
             Untuk mendapatkan expiry date dari accessToken dan refreshToken.
@@ -62,22 +62,19 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
             token expired, maka dari sisi frontend perlu
             melakukan request generate token baru.
         */
-        const expAccessToken = yield (0, JWT_1.jwtVerify)(accessToken);
-        const expRefreshToken = yield (0, JWT_1.jwtVerify)(refreshToken);
+        const a = yield (0, auth_1.saveAccessKey)({
+            accessToken: accessToken.token,
+            userId: user.id
+        });
+        console.log(a);
         (0, ResponseHandler_1.responseHandler)({
             res: res,
             message: 'Login Success!',
             data: {
                 username: user.username,
                 role: user.role,
-                accessToken: {
-                    token: accessToken,
-                    expiry: expAccessToken.exp
-                },
-                refreshToken: {
-                    token: refreshToken,
-                    expiry: expRefreshToken.exp
-                }
+                accessToken,
+                refreshToken
             }
         });
     }
