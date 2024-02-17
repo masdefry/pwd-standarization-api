@@ -11,20 +11,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.login = exports.register = void 0;
 const HashPassword_1 = require("../lib/HashPassword");
-const UserService_1 = require("../services/auth/UserService");
+const auth_1 = require("../services/auth");
 const JWT_1 = require("../lib/JWT");
+const ResponseHandler_1 = require("../helpers/ResponseHandler");
 const register = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, username, password, role } = req.body;
-        if (!email || !username || !password || !role)
-            throw { message: 'Data Not Complete!' };
         const hashedPassword = yield (0, HashPassword_1.hashPassword)(password);
-        const userCreated = yield (0, UserService_1.createUser)({ email, username, hashedPassword, role });
-        console.log(userCreated);
-        res.status(200).send({
-            error: false,
-            message: 'Register Success',
-            data: null
+        yield (0, auth_1.createUser)({ email, username, hashedPassword, role });
+        (0, ResponseHandler_1.responseHandler)({
+            res: res,
+            status: 201,
+            message: 'Register Success!',
         });
     }
     catch (error) {
@@ -35,14 +33,7 @@ exports.register = register;
 const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, password } = req.body;
-        const user = yield prisma.users.findFirst({
-            where: {
-                OR: [
-                    { email: email },
-                    { username: email }
-                ]
-            }
-        });
+        const user = yield (0, auth_1.findUser)({ email });
         if (user === null)
             throw { message: 'Username or Email Not Found' };
         const isComparePassword = yield (0, HashPassword_1.hashMatch)(password, user.password);
@@ -73,9 +64,9 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
         */
         const expAccessToken = yield (0, JWT_1.jwtVerify)(accessToken);
         const expRefreshToken = yield (0, JWT_1.jwtVerify)(refreshToken);
-        res.status(200).send({
-            error: false,
-            message: 'Login Success',
+        (0, ResponseHandler_1.responseHandler)({
+            res: res,
+            message: 'Login Success!',
             data: {
                 username: user.username,
                 role: user.role,
@@ -91,7 +82,6 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
         });
     }
     catch (error) {
-        console.log(error);
         next(error);
     }
 });

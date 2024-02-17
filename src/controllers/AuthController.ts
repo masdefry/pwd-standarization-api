@@ -1,32 +1,22 @@
 // Handle Request & Response
 import {Request, Response, NextFunction} from 'express';
-
-import prisma from '../connection';
-
 import { hashPassword, hashMatch } from '../lib/HashPassword';
+import { createUser, findUser } from '../services/auth';
 import { jwtCreate, jwtVerify } from '../lib/JWT';
+import { responseHandler } from '../helpers/ResponseHandler';
 
 export const register = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const {email, username, password, role} = req.body
 
-        if(!email || !username || !password || !role) throw {message: 'Data Not Complete!'}
-
         const hashedPassword: string = await hashPassword(password)
         
-        const createUser = await prisma.users.create({
-            data: {
-                email, 
-                username, 
-                password: hashedPassword, 
-                role
-            }
-        })
-
-        res.status(200).send({
-            error: false, 
-            message: 'Register Success',
-            data: null
+        await createUser({ email, username, hashedPassword, role })
+        
+        responseHandler({
+            res: res,
+            status: 201,
+            message: 'Register Success!',
         })
     } catch (error) {
         next(error)
@@ -37,14 +27,7 @@ export const login = async(req: Request, res: Response, next: NextFunction): Pro
     try {
         const {email, password} = req.body
   
-        const user = await prisma.users.findFirst({
-            where: {
-                OR: [
-                    {email: email}, 
-                    {username: email}
-                ]
-            }
-        })
+        const user = await findUser({ email })
         
         if(user === null) throw {message: 'Username or Email Not Found'}
 
@@ -76,13 +59,13 @@ export const login = async(req: Request, res: Response, next: NextFunction): Pro
             token expired, maka dari sisi frontend perlu
             melakukan request generate token baru. 
         */
-        const expAccessToken = await jwtVerify(accessToken)
-        const expRefreshToken = await jwtVerify(refreshToken)
-        
-        res.status(200).send({
-            error: false, 
-            message: 'Login Success', 
-            data: {
+        const expAccessToken: any = await jwtVerify(accessToken)
+        const expRefreshToken: any = await jwtVerify(refreshToken)
+
+        responseHandler({
+            res: res,
+            message: 'Login Success!',
+            data:  {
                 username: user.username,
                 role: user.role,
                 accessToken: {
@@ -96,7 +79,6 @@ export const login = async(req: Request, res: Response, next: NextFunction): Pro
             }
         })
     } catch (error) {
-        console.log(error)
         next(error)
     }
 }

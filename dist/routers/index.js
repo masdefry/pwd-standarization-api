@@ -31,8 +31,8 @@ const route = (0, express_1.Router)();
 route.use(express_1.default.json());
 route.use('*/image', express_1.default.static('public/image'));
 // Import All Router
-const UserRouter_1 = __importDefault(require("./UserRouter"));
+const AuthRouter_1 = __importDefault(require("./AuthRouter"));
 const ProductRouter_1 = __importDefault(require("./ProductRouter"));
-route.use('/auth', UserRouter_1.default);
+route.use('/auth', AuthRouter_1.default);
 route.use('/product', ProductRouter_1.default);
 exports.default = route;

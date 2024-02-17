@@ -6,7 +6,7 @@ route.use(express.json())
 route.use('*/image',express.static('public/image'))
 
 // Import All Router
-import UserRouter from './UserRouter';
+import UserRouter from './AuthRouter';
 import ProductRouter from './ProductRouter';
 
 route.use('/auth', UserRouter)
