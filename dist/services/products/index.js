@@ -12,16 +12,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createUser = void 0;
+exports.createProduct = void 0;
 const connection_1 = __importDefault(require("../../connection"));
-const createUser = ({ email, username, hashedPassword, role }) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield connection_1.default.users.create({
-        data: {
-            email,
-            username,
-            password: hashedPassword,
-            role
+const createProduct = ({ req, name, price, description, stock }) => __awaiter(void 0, void 0, void 0, function* () {
+    yield connection_1.default.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+        const { id } = yield tx.products.create({
+            data: {
+                name, price, description, stock
+            }
+        });
+        const createImages = [];
+        if (req.files) {
+            let filesArray = Array.isArray(req.files) ? req.files : req.files['images'];
+            filesArray.forEach((item) => __awaiter(void 0, void 0, void 0, function* () {
+                createImages.push({ url: item.filename, productsId: id });
+            }));
         }
-    });
+        yield tx.productImages.createMany({
+            data: createImages
+        });
+    }));
 });
-exports.createUser = createUser;
+exports.createProduct = createProduct;

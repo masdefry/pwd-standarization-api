@@ -9,90 +9,33 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login = exports.register = void 0;
-const HashPassword_1 = require("../lib/HashPassword");
-const UserService_1 = require("../services/auth/UserService");
-const JWT_1 = require("../lib/JWT");
-const register = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.create = void 0;
+const ResponseHandler_1 = require("../helpers/ResponseHandler");
+const user_1 = require("../services/user");
+const create = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { email, username, password, role } = req.body;
-        if (!email || !username || !password || !role)
-            throw { message: 'Data Not Complete!' };
-        const hashedPassword = yield (0, HashPassword_1.hashPassword)(password);
-        const userCreated = yield (0, UserService_1.createUser)({ email, username, hashedPassword, role });
-        console.log(userCreated);
-        res.status(200).send({
-            error: false,
-            message: 'Register Success',
-            data: null
+        const decodedAccessPayload = req.decodedAccessPayload;
+        const newAccessToken = req.newAccessToken;
+        const { receiver, phoneNumber, address } = req.body;
+        const createdAddress = yield (0, user_1.createAddress)({
+            req,
+            id: decodedAccessPayload.id,
+            receiver,
+            phoneNumber,
+            address
         });
-    }
-    catch (error) {
-        next(error);
-    }
-});
-exports.register = register;
-const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { email, password } = req.body;
-        const user = yield prisma.users.findFirst({
-            where: {
-                OR: [
-                    { email: email },
-                    { username: email }
-                ]
-            }
-        });
-        if (user === null)
-            throw { message: 'Username or Email Not Found' };
-        const isComparePassword = yield (0, HashPassword_1.hashMatch)(password, user.password);
-        if (isComparePassword === false)
-            throw { message: 'Password Doesnt Match' };
-        /*
-            accessToken: Digunakan untuk mengambil resource (Token Utama)
-            refreshToken: Digunakan untuk authorization
-
-            Mengapa expiry date accessToken hanya sebentar dibanding refreshToken?
-            Untuk menghindari pencurian token/penyalahgunaan token. Sehingga
-            accessToken harus sering diperbarui.
-
-            Dalam implementasinya, ketika accessToken expired, maka
-            client akan mengirimkan refreshToken untuk generate accessToken
-            baru. Sehingga user tidak perlu login ulang untuk mendapatkan
-            accessToken yang baru.
-        */
-        const accessToken = yield (0, JWT_1.jwtCreate)({ id: user.id, role: user.role, expiryIn: '1h' });
-        const refreshToken = yield (0, JWT_1.jwtCreate)({ id: user.id, role: user.role, expiryIn: '7d' });
-        /*
-            Untuk mendapatkan expiry date dari accessToken dan refreshToken.
-            Kegunaannya untuk pengecekan di sisi frontend,
-            supaya tidak perlu selalu request ke backend untuk pengecekan
-            token nya sudah expired atau belum. Apabila
-            token expired, maka dari sisi frontend perlu
-            melakukan request generate token baru.
-        */
-        const expAccessToken = yield (0, JWT_1.jwtVerify)(accessToken);
-        const expRefreshToken = yield (0, JWT_1.jwtVerify)(refreshToken);
-        res.status(200).send({
-            error: false,
-            message: 'Login Success',
+        (0, ResponseHandler_1.responseHandler)({
+            res: res,
+            status: 201,
+            message: 'Create Address Success!',
             data: {
-                username: user.username,
-                role: user.role,
-                accessToken: {
-                    token: accessToken,
-                    expiry: expAccessToken.exp
-                },
-                refreshToken: {
-                    token: refreshToken,
-                    expiry: expRefreshToken.exp
-                }
+                createdAddress,
+                newAccessToken: newAccessToken || null
             }
         });
     }
     catch (error) {
-        console.log(error);
         next(error);
     }
 });
-exports.login = login;
+exports.create = create;

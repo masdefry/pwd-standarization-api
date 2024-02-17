@@ -24,8 +24,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
+// Define Variable
 const route = (0, express_1.Router)();
-const UserController = __importStar(require("../controllers/AuthController"));
-route.post('/', UserController.register);
-route.post('/login', UserController.login);
+// Import Product Controller
+const UserController = __importStar(require("./../controllers/UserController"));
+// Import Middleware
+const TokenVerify_1 = require("../middleware/TokenVerify");
+route.post('/', TokenVerify_1.refreshTokenVerify, TokenVerify_1.accessTokenVerify, TokenVerify_1.regenerateToken, UserController.create);
 exports.default = route;

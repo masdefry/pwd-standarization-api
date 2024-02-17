@@ -52,8 +52,8 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
             baru. Sehingga user tidak perlu login ulang untuk mendapatkan
             accessToken yang baru.
         */
-        const accessToken = yield (0, JWT_1.jwtCreate)({ id: user.id, role: user.role, expiryIn: '1h' });
-        const refreshToken = yield (0, JWT_1.jwtCreate)({ id: user.id, role: user.role, expiryIn: '7d' });
+        const accessToken = yield (0, JWT_1.jwtCreate)({ id: user.id, role: user.role, expiryIn: '10s' });
+        const refreshToken = yield (0, JWT_1.jwtCreate)({ id: user.id, role: user.role, expiryIn: '500s' });
         /*
             Untuk mendapatkan expiry date dari accessToken dan refreshToken.
             Kegunaannya untuk pengecekan di sisi frontend,

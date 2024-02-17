@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router } from 'express';
 
 // Define Variable
 const route = Router()
@@ -7,11 +7,9 @@ const route = Router()
 import * as ProductController from './../controllers/ProductController';
 
 // Import Middleware
-import { tokenVerify } from "../middleware/TokenVerify";
-import { UploadValidator } from "../middleware/UploadValidator";
+import { refreshTokenVerify } from '../middleware/TokenVerify';
+import { UploadValidator } from '../middleware/UploadValidator';
 
-route.post('/', tokenVerify, UploadValidator, ProductController.create)
-route.delete('/:productId', ProductController.deleteProduct)
-route.get('/', ProductController.findProducts)
+route.post('/', refreshTokenVerify, UploadValidator, ProductController.create)
 
 export default route

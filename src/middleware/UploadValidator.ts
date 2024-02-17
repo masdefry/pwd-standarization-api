@@ -4,7 +4,7 @@ import { upload } from "../lib/Multer";
 import fs from 'fs';
 
 export const UploadValidator = (req: Request, res: Response, next: NextFunction) => {
-    const uploadResult = upload.fields([{name: 'bebas', maxCount: 3}])
+    const uploadResult = upload.fields([{name: 'images', maxCount: 3}])
 
     uploadResult(req, res, (err) => {
         try {

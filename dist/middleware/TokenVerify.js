@@ -9,23 +9,50 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.tokenVerify = void 0;
+exports.regenerateToken = exports.accessTokenVerify = exports.refreshTokenVerify = void 0;
 const JWT_1 = require("../lib/JWT");
-const tokenVerify = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const JWT_2 = require("../lib/JWT");
+const refreshTokenVerify = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const token = req.headers.authorization;
-        const decodedPayload = yield (0, JWT_1.jwtVerify)(token);
-        req.decodedPayload = decodedPayload;
-        if (decodedPayload.role !== 'ADMIN')
-            throw { message: 'Access Denied' };
+        const token = req.headers.authrefreshkey;
+        const decodedRefreshPayload = yield (0, JWT_1.jwtVerify)(token);
+        req.decodedRefreshPayload = decodedRefreshPayload;
         next();
     }
     catch (error) {
-        res.status(400).send({
-            error: true,
-            message: error.message,
-            data: null,
-        });
+        next(error);
     }
 });
-exports.tokenVerify = tokenVerify;
+exports.refreshTokenVerify = refreshTokenVerify;
+const accessTokenVerify = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const token = req.headers.authaccesskey;
+        const decodedAccessPayload = yield (0, JWT_1.jwtVerify)(token);
+        if (decodedAccessPayload.role !== 'USER')
+            throw { denied: true, message: 'Access Denied!' };
+        req.decodedAccessPayload = decodedAccessPayload;
+        next();
+    }
+    catch (error) {
+        if (error.denied)
+            next(error);
+        next();
+    }
+});
+exports.accessTokenVerify = accessTokenVerify;
+const regenerateToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let decodedRefreshPayload = req.decodedRefreshPayload;
+        let decodedAccessPayload = req.decodedAccessPayload;
+        if (!decodedAccessPayload && decodedRefreshPayload) {
+            let accessToken = yield (0, JWT_2.jwtCreate)({ id: decodedRefreshPayload.id, role: decodedRefreshPayload.role, expiryIn: '30s' });
+            req.decodedAccessPayload = decodedRefreshPayload;
+            req.newAccessToken = accessToken;
+        }
+        next();
+    }
+    catch (error) {
+        next(error);
+    }
+});
+exports.regenerateToken = regenerateToken;

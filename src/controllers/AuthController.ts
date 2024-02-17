@@ -48,8 +48,8 @@ export const login = async(req: Request, res: Response, next: NextFunction): Pro
             baru. Sehingga user tidak perlu login ulang untuk mendapatkan
             accessToken yang baru. 
         */
-        const accessToken = await jwtCreate({id: user.id, role: user.role, expiryIn: '1h'})
-        const refreshToken = await jwtCreate({id: user.id, role: user.role, expiryIn: '7d'})
+        const accessToken = await jwtCreate({id: user.id, role: user.role, expiryIn: '10s'})
+        const refreshToken = await jwtCreate({id: user.id, role: user.role, expiryIn: '500s'})
         
         /*
             Untuk mendapatkan expiry date dari accessToken dan refreshToken.

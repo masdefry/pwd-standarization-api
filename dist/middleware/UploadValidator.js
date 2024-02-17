@@ -7,7 +7,7 @@ exports.UploadValidator = void 0;
 const Multer_1 = require("../lib/Multer");
 const fs_1 = __importDefault(require("fs"));
 const UploadValidator = (req, res, next) => {
-    const uploadResult = Multer_1.upload.fields([{ name: 'bebas', maxCount: 3 }]);
+    const uploadResult = Multer_1.upload.fields([{ name: 'images', maxCount: 3 }]);
     uploadResult(req, res, (err) => {
         try {
             if (err)
