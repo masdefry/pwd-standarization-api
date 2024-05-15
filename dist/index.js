@@ -14,10 +14,10 @@ app.get('/', (req, res) => {
 });
 app.use(routers_1.default);
 app.use((err, req, res, next) => {
-    res.status(500).send({
+    res.status(err.status || 500).send({
         error: true,
         message: err.message || 'Something Wrong!',
-        data: null
+        data: { isExpiryToken: err.isExpiryToken } || null
     });
 });
 app.listen(port, () => {

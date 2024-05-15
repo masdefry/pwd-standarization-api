@@ -7,9 +7,10 @@ const route = Router()
 import * as UserController from './../controllers/UserController';
 
 // Import Middleware
-import { refreshTokenVerify, accessTokenVerify, regenerateToken } from '../middleware/TokenVerify';
+import { accessTokenVerify } from '../middleware/TokenVerify';
+import { roleVerifyUser } from '../middleware/RoleVerify';
 
-route.post('/address', refreshTokenVerify, accessTokenVerify, regenerateToken, UserController.createAddress)
-route.get('/address', refreshTokenVerify, accessTokenVerify, regenerateToken, UserController.findAddresses)
+route.post('/address', accessTokenVerify, roleVerifyUser, UserController.createAddress)
+route.get('/address', accessTokenVerify, roleVerifyUser, UserController.findAddresses)
 
 export default route

@@ -30,6 +30,7 @@ const route = (0, express_1.Router)();
 const UserController = __importStar(require("./../controllers/UserController"));
 // Import Middleware
 const TokenVerify_1 = require("../middleware/TokenVerify");
-route.post('/address', TokenVerify_1.refreshTokenVerify, TokenVerify_1.accessTokenVerify, TokenVerify_1.regenerateToken, UserController.createAddress);
-route.get('/address', TokenVerify_1.refreshTokenVerify, TokenVerify_1.accessTokenVerify, TokenVerify_1.regenerateToken, UserController.findAddresses);
+const RoleVerify_1 = require("../middleware/RoleVerify");
+route.post('/address', TokenVerify_1.accessTokenVerify, RoleVerify_1.roleVerifyUser, UserController.createAddress);
+route.get('/address', TokenVerify_1.accessTokenVerify, RoleVerify_1.roleVerifyUser, UserController.findAddresses);
 exports.default = route;

@@ -13,34 +13,50 @@ exports.regenerateToken = exports.accessTokenVerify = exports.refreshTokenVerify
 const JWT_1 = require("../lib/JWT");
 const JWT_2 = require("../lib/JWT");
 const auth_1 = require("../services/auth");
-const refreshTokenVerify = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const refreshTokenVerify = (refreshToken) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const token = req.headers.authrefreshkey;
-        const decodedRefreshPayload = yield (0, JWT_1.jwtVerify)(token);
-        req.decodedRefreshPayload = decodedRefreshPayload;
-        next();
+        // Cek, Apakah RefreshToken Valid & Belum Expiry
+        return yield (0, JWT_1.jwtVerify)(refreshToken);
     }
     catch (error) {
-        next(error);
+        // Apabila RefreshToken Expiry
+        throw Object.assign(Object.assign({}, error), { isExpiryRefresh: true });
     }
 });
 exports.refreshTokenVerify = refreshTokenVerify;
 const accessTokenVerify = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const token = req.headers.authaccesskey;
-        const validateResult = yield (0, auth_1.validateAccessKey)({ accessToken: token });
-        if (!validateResult)
-            throw { denied: true, message: 'Access Key Not Valid!' };
-        const decodedAccessPayload = yield (0, JWT_1.jwtVerify)(token);
-        if (decodedAccessPayload.role !== 'USER')
-            throw { denied: true, message: 'Access Denied!' };
+        const accessToken = req.headers.authaccesskey;
+        const refreshToken = req.headers.authrefreshkey;
+        // Cek, Apakah AccessToken Dikirim dari Client
+        if (!accessToken)
+            throw { status: 401, message: 'Unauthorized! Token Must Provide!' };
+        if (accessToken && refreshToken) {
+            const decodedRefreshPayload = yield (0, exports.refreshTokenVerify)(refreshToken);
+            // Apabila RefreshToken Masih Valid, Generate AccessToken Baru
+            console.log(decodedRefreshPayload);
+            console.log('>>>');
+        }
+        // Cek, Apakah AccessToken Menggunakan Latest AccessToken?
+        const validateAccessKeyResult = yield (0, auth_1.validateAccessKey)({ accessToken: accessToken });
+        if (!validateAccessKeyResult)
+            throw { status: 401, message: 'Unauthorized! Token Invalid!' };
+        // Verify, Apakah AccessToken Valid & Belum Expiry
+        const decodedAccessPayload = yield (0, JWT_1.jwtVerify)(accessToken);
         req.decodedAccessPayload = decodedAccessPayload;
         next();
     }
     catch (error) {
-        if (error.denied)
-            next(error);
-        next();
+        if (error.message === 'jwt expired' && error.isExpiryRefresh) {
+            next(Object.assign(Object.assign({}, error), { isExpiryToken: 'refresh' }));
+        }
+        // Apabila AccessToken Expiry, Kirim Response isExpiryAccess = true
+        // untuk Kebutuhan Axios Interceptor Supaya Dapat Mengirimkan
+        // RefreshToken untuk Pembaharuan AccessToken 
+        if (error.message === 'jwt expired') {
+            next(Object.assign(Object.assign({}, error), { isExpiryToken: 'access' }));
+        }
+        next(error);
     }
 });
 exports.accessTokenVerify = accessTokenVerify;

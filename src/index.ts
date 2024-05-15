@@ -14,11 +14,15 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use(route)
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    res.status(500).send({
+interface INewError extends Error{
+    status: number, 
+    isExpiryToken: boolean
+}
+app.use((err: INewError, req: Request, res: Response, next: NextFunction) => { 
+    res.status(err.status || 500).send({
         error: true, 
         message: err.message || 'Something Wrong!',
-        data: null
+        data: {isExpiryToken: err.isExpiryToken} || null
     })
 })
 

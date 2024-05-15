@@ -31,7 +31,7 @@ export const saveAccessKey = async({ accessToken, userId }: ISaveAccessKey) => {
     })
 }
 
-export const findUser = async({ email }: IFindUser): Promise<IFindUserResult | null> => {
+export const findUser = async({ email }: IFindUser) => {
     return await prisma.users.findFirst({
         where: {
             OR: [
