@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from "express";
-import { upload } from "../lib/Multer";
+import { Request, Response, NextFunction } from 'express';
+import { upload } from '../lib/Multer';
 
 import fs from 'fs';
 

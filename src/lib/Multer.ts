@@ -1,4 +1,4 @@
-import multer from "multer";
+import multer from 'multer';
 import fs from 'fs';
 
 const defaultPath = 'public'

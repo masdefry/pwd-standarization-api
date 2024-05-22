@@ -1,4 +1,4 @@
-import { Request, NextFunction, Response } from "express";
+import { Request, NextFunction, Response } from 'express';
 
 const { query, body, validationResult } = require('express-validator');
 
