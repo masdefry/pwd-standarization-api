@@ -1,9 +1,8 @@
 import prisma from '../../connection';
-import { ICreateAddressProps, IFindAddressProps } from './types';
+import { ICreateAddressProps } from './types';
 
 export const createAddressService = async({
-    req, 
-    id,
+    usersId,
     receiver,
     phoneNumber,
     address
@@ -13,18 +12,7 @@ export const createAddressService = async({
             receiver,
             phoneNumber, 
             address,
-            usersId: id
-        }
-    })
-}
-
-export const findAddressesService = async({
-    req, 
-    id
-}: IFindAddressProps) => {
-    return await prisma.address.findMany({
-        where: {
-            usersId: id
+            usersId
         }
     })
 }

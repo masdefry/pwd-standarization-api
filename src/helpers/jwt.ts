@@ -1,19 +1,17 @@
 import jsonwebtoken from 'jsonwebtoken';
 
-interface IJWTCreate {
+interface IJWTPayload {
     id: string;
     role: string;
     expiryIn: string;
 }
 
-export const jwtCreate = async({id, role, expiryIn}: IJWTCreate) => {
+export const jwtCreate = async({id, role, expiryIn}: IJWTPayload) => {
     const token = jsonwebtoken.sign({id, role}, 'abc123', {
         expiresIn: expiryIn
     })
 
-    const expiry: any = await jwtVerify(token)
-
-    return { token, expiry }
+    return token
 }
 
 export const jwtVerify = async(token: string) => {

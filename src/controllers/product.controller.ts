@@ -1,6 +1,6 @@
 // Handle Request & Response
 import {Request, Response, NextFunction} from 'express';
-import { createProductService } from './../services/products/index';
+import { createProductService } from '../services/product/create-product.service';
 import { responseHandler } from '../helpers/ResponseHandler';
 import prisma from '../connection';
 import fs from 'fs';
@@ -20,7 +20,7 @@ export const createProduct = async(req: Request, res: Response, next: NextFuncti
             responseHandler({
                 res: res,
                 status: 201,
-                message: 'Create Product Success!',
+                message: 'Create Product Success',
             })
         } catch (error) {
             if(req.files){

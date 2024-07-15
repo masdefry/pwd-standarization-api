@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { upload } from '../lib/Multer';
+import { upload } from '../lib/multer';
 
 import fs from 'fs';
 
@@ -37,7 +37,7 @@ export const UploadValidator = (req: Request, res: Response, next: NextFunction)
 
             res.status(500).send({
                 error: true, 
-                message: `Upload Failed! ${error.message}`, 
+                message: `[Upload Failed] ${error.message}`, 
                 data: null
             })
         }
