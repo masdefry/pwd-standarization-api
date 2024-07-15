@@ -7,8 +7,8 @@ const route = Router()
 import * as addressController from '../controllers/address.controller';
 
 // Import Middleware
-import { accessTokenVerify } from '../middleware/token-verify';
-import { roleVerifyUser } from '../middleware/role-verify';
+import { accessTokenVerify } from '../middlewares/token-verify';
+import { roleVerifyUser } from '../middlewares/role-verify';
 
 route.post('/', accessTokenVerify, roleVerifyUser, addressController.createAddress)
 route.get('/', accessTokenVerify, roleVerifyUser, addressController.findAddress)

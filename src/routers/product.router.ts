@@ -7,8 +7,8 @@ const route = Router()
 import * as productController from '../controllers/product.controller';
 
 // Import Middleware
-import { accessTokenVerify } from '../middleware/token-verify';
-import { UploadValidator } from '../middleware/upload-validator';
+import { accessTokenVerify } from '../middlewares/token-verify';
+import { UploadValidator } from '../middlewares/upload-validator';
 
 route.post('/', accessTokenVerify, UploadValidator, productController.createProduct)
 
