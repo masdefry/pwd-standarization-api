@@ -1,12 +1,12 @@
 import prisma from '../../connection';
-import { ICreateAddressProps } from './types';
+import { IAddressProps } from './types';
 
 export const createAddressService = async({
     usersId,
     receiver,
     phoneNumber,
     address
-}: ICreateAddressProps) => {
+}: IAddressProps) => {
     return await prisma.address.create({
         data: {
             receiver,

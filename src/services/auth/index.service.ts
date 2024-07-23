@@ -1,18 +1,18 @@
 import prisma from '../../connection';
-import { ICreateUserProps, IFindUserProps, ISaveAccessKeyProps } from './types';
+import { IUserProps } from './types';
 
-export const createUser = async({ email, username, hashedPassword, role }: ICreateUserProps) => {
+export const createUserService = async({ email, username, password, role }: IUserProps) => {
     return await prisma.users.create({
         data: {
             email, 
             username, 
-            password: hashedPassword, 
+            password, 
             role
         }
     })
 }
 
-export const findUser = async({ email }: IFindUserProps) => {
+export const findUserByEmailOrUsernameService = async({ email }: Pick<IUserProps, 'email'>) => {
     return await prisma.users.findFirst({
         where: {
             OR: [
@@ -23,7 +23,7 @@ export const findUser = async({ email }: IFindUserProps) => {
     });
 }
 
-export const validateAccessKey = async({ accessToken }: any) => {
+export const validateAccessKeyService = async({ accessToken }: { accessToken: string }) => {
     return await prisma.users.findFirst({
         where: {
             accessKey: accessToken
@@ -31,13 +31,13 @@ export const validateAccessKey = async({ accessToken }: any) => {
     })
 }
 
-export const saveAccessKey = async({ accessToken, userId }: ISaveAccessKeyProps) => {
+export const updateAccessKeyService = async({ accessToken, usersId }: { accessToken: string, usersId: string }) => {
     return await prisma.users.update({
         data: {
             accessKey: accessToken
         },
         where: {
-            id: userId
+            id: usersId
         }
     })
 }

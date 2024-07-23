@@ -1,16 +1,21 @@
 // Handle Request & Response
 import {Request, Response, NextFunction} from 'express';
 import { hashPassword, hashMatch } from '../helpers/hash-password';
-import { createUser, findUser, saveAccessKey } from '../services/auth/index.service';
+import { createUserService, findUserByEmailOrUsernameService, updateAccessKeyService } from '../services/auth/index.service';
 import { jwtCreate } from '../helpers/jwt';
 
-export const register = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const registerUser = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const {email, username, password, role} = req.body
 
         const hashedPassword: string = await hashPassword(password)
         
-        await createUser({ email, username, hashedPassword, role })
+        await createUserService({ 
+            email, 
+            username, 
+            password: hashedPassword, 
+            role 
+        })
         
         res.status(201).send({
             error: false,
@@ -26,7 +31,7 @@ export const login = async(req: Request, res: Response, next: NextFunction): Pro
     try {
         const {email, password} = req.body
   
-        const user = await findUser({ email })
+        const user = await findUserByEmailOrUsernameService({ email })
         
         if(user === null) throw {message: 'Username or Email Not Found'}
 
@@ -59,9 +64,9 @@ export const login = async(req: Request, res: Response, next: NextFunction): Pro
             melakukan request generate token baru. 
         */
 
-        await saveAccessKey({
+        await updateAccessKeyService({
             accessToken: accessToken,
-            userId: user.id
+            usersId: user.id
         })
        
         res.status(200).send({

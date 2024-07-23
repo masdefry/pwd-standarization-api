@@ -1,7 +1,6 @@
 // Handle Request & Response
 import {Request, Response, NextFunction} from 'express';
 import { createProductService } from '../services/product/create-product.service';
-import { responseHandler } from '../helpers/ResponseHandler';
 import prisma from '../connection';
 import fs from 'fs';
 
@@ -10,17 +9,17 @@ export const createProduct = async(req: Request, res: Response, next: NextFuncti
             const {name, price, description, stock} = JSON.parse(req.body.dataProduct)
 
             await createProductService({
-                req, 
+                files:  Array.isArray(req.files) ? req!.files! : req!.files!['images'], 
                 name, 
                 price, 
                 description, 
                 stock
             })
             
-            responseHandler({
-                res: res,
-                status: 201,
-                message: 'Create Product Success',
+            res.status(201).send({
+                error: false, 
+                message: 'Create Product Success', 
+                data: {}
             })
         } catch (error) {
             if(req.files){

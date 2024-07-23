@@ -1,13 +1,13 @@
 import prisma from '../../connection';
-import { ICreateProductProps } from './types';
+import { IProductAndFilesProps, IProductImageProps } from './types';
 
 export const createProductService = async({
-    req, 
+    files, 
     name, 
     price, 
     description, 
     stock
-}: ICreateProductProps) => {
+}: IProductAndFilesProps) => {
     await prisma.$transaction(async(tx: any) => {
         const {id} = await tx.products.create({
             data: {
@@ -15,11 +15,10 @@ export const createProductService = async({
             }
         })
 
-        const createImages: any[] = []
+        const createImages: IProductImageProps[] = []
 
-        if(req.files){
-            let filesArray = Array.isArray(req.files) ? req.files : req.files['images'];
-            filesArray.forEach(async(item: any) => {
+        if(files){
+            files.forEach(async(item: any) => {
                 createImages.push({url: item.filename, productsId: id})
             })
         }

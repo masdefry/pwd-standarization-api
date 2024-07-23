@@ -1,15 +1,12 @@
-export interface ICreateUserProps{
+export interface IUserProps{
     email: string;
     username: string; 
-    hashedPassword: string;
-    role: string;
+    password: string;
+    role: Role;
 }
 
-export interface ISaveAccessKeyProps{
-    accessToken: string;
-    userId: string;
-}
-
-export interface IFindUserProps{
-    email: string;
+enum Role{
+    USER,
+    SUPER_ADMIN,
+    ADMIN
 }
