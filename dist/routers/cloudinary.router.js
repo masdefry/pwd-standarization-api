@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const cloudinaryRouter = (0, express_1.Router)();
+const cloudinary_controller_1 = require("../controllers/cloudinary.controller");
+const multer_1 = require("../utils/multer");
+const verify_uploader_1 = require("./../middlewares/verify.uploader");
+cloudinaryRouter.post('/', (0, multer_1.uploadMulter)({ storageType: 'disk' }).fields([{ name: 'images', maxCount: 3 }]), verify_uploader_1.verifyUploader, cloudinary_controller_1.uploadFilesTest);
+cloudinaryRouter.delete('/:imageUrl', cloudinary_controller_1.deleteFilesTest);
+exports.default = cloudinaryRouter;
