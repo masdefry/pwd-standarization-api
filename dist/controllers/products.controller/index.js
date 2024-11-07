@@ -13,10 +13,11 @@ exports.findProducts = void 0;
 const products_service_1 = require("../../services/products.service");
 const findProducts = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        let { search, categoryId } = req.query;
         const page = parseInt(req.query.page) || 1;
         const limit = 5;
         const offset = (page - 1) * limit;
-        const { products, totalProducts, totalPages } = yield (0, products_service_1.findProductsService)({ limit, offset });
+        const { products, totalProducts, totalPages } = yield (0, products_service_1.findProductsService)({ limit, offset, search, categoryId: categoryId ? parseInt(categoryId) : categoryId });
         res.status(200).json({
             error: false,
             message: 'Get Products Success',

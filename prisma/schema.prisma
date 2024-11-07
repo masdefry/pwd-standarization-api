@@ -22,6 +22,7 @@ model User {
   deletedAt DateTime?
 
   address Address[]
+  transaction Transaction[]
 
   @@map("users")
 }
@@ -86,4 +87,54 @@ enum Role {
   USER
   SUPER_ADMIN
   ADMIN
+}
+
+model Transaction{
+  id Int @id @default(autoincrement())
+  total String 
+  expiredAt DateTime
+
+  usersId String
+  user User @relation(fields: [usersId], references: [id])
+
+  createdAt DateTime @default(now()) 
+  updatedAt DateTime @default(now()) 
+  deletedAt DateTime?
+
+  transactionStatus TransactionStatus[]
+  transactionItem TransactionItem[]
+
+  @@map("transactions")
+}
+
+model TransactionItem{
+  id Int @id @default(autoincrement())
+  productName String 
+  quantity Int 
+  price Int 
+  transactionsId Int 
+  transaction Transaction @relation(fields: [transactionsId], references: [id])
+
+  createdAt DateTime @default(now()) 
+  updatedAt DateTime @default(now()) 
+  deletedAt DateTime?
+
+  @@map("transaction_items")
+}
+
+model TransactionStatus{
+  id Int @id @default(autoincrement())
+  status Status
+  transactionsId Int 
+  transaction Transaction @relation(fields: [transactionsId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@map("transaction_statuses") 
+}
+
+enum Status{
+  WAITING_FOR_PAYMENT
+  PAID
+  CANCELLED
+  EXPIRED
 }

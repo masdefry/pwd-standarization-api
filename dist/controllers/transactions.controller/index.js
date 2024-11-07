@@ -8,21 +8,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mysqlConnection = exports.prisma = void 0;
-const client_1 = require("@prisma/client");
-const promise_1 = __importDefault(require("mysql2/promise"));
-exports.prisma = new client_1.PrismaClient();
-const mysqlConnection = () => __awaiter(void 0, void 0, void 0, function* () {
-    const connection = yield promise_1.default.createConnection({
-        host: 'localhost',
-        user: 'root',
-        password: 'abc12345',
-        database: 'pwd-standarization',
-    });
-    return connection;
+exports.createTransaction = void 0;
+const transactions_service_1 = require("../../services/transactions.service");
+const createTransaction = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const { total, productItems } = req.body;
+        const usersId = (_a = req === null || req === void 0 ? void 0 : req.auth) === null || _a === void 0 ? void 0 : _a.usersId;
+        yield (0, transactions_service_1.createTransactionService)({ total, productItems, usersId });
+        res.status(201).json({
+            message: 'Create Transaction Success'
+        });
+    }
+    catch (error) {
+        next(error);
+    }
 });
-exports.mysqlConnection = mysqlConnection;
+exports.createTransaction = createTransaction;
