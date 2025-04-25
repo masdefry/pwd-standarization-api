@@ -1,7 +1,8 @@
 import { prisma } from '../../connection'
 import { Prisma } from '@prisma/client';
+import { QueryParamsProps } from './types';
 
-export const findProductsService = async({ limit, offset, search, categoryId }: {limit: number, offset: number, search: string | undefined, categoryId: number | string}) => {
+export const findProductsService = async({ limit, offset, search, categoryId }: Pick<QueryParamsProps, 'limit' | 'offset' | 'search'> & { categoryId: number | string }) => {
     let whereClause: Prisma.ProductWhereInput = {};
 
     if (search) {

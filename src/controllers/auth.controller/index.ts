@@ -1,45 +1,51 @@
 import { NextFunction, Request, Response } from 'express';
-import { authLoginService, keepAuthService } from '../../services/auth.service';
-import { createToken } from '../../utils/jwt';
-import { IAuth } from '../../services/auth.service/types';
+import { loginService } from '../../services/auth.service/login.service';
+import { sessionLoginService } from '../../services/auth.service/session.login.service';
+import { AuthProps } from '../../services/auth.service/types';
 
-export const authLogin = async(req: Request, res: Response, next: NextFunction) => {
-    try {
-        const {email, password} = req.body 
+export const authLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { email, password } = req.body;
 
-        const user = await authLoginService({email, password})
+    const { token, username, role } = await loginService({ email, password });
 
-        const token = await createToken({id: user[0].id, role: user[0].role})
+    res.status(200).json({
+      error: false,
+      message: 'You have successfully logged in',
+      users: {
+        token,
+        username,
+        role,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
-        res.status(200).json({
-            error: false, 
-            message: 'Login Success',
-            data: {
-                token,
-                username: user[0].username, 
-                role: user[0].role
-            }
-        })
-    } catch (error) {
-        next(error)
-    }
-}
+export const sessionLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.body.payload;
 
-export const keepAuth = async(req: Request, res: Response, next: NextFunction) => {
-    try {
-        const {usersId} = req.auth 
-        
-        const user: IAuth = await keepAuthService({id: usersId})
-        
-        res.status(200).json({
-            error: false, 
-            message: 'Keep Auth Success', 
-            data: {
-                username: user.username,
-                role: user.role, 
-            }
-        })
-    } catch (error) {
-        console.log(error)
-    }
-}
+    const user: AuthProps = await sessionLoginService({ id });
+
+    res.status(200).json({
+      error: false,
+      message: 'Your session is active',
+      users: {
+        username: user.username,
+        role: user.role,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};

@@ -1,4 +1,4 @@
-export interface IAuth{
+export interface AuthProps{
     id?: string, 
     username: string, 
     email: string, 

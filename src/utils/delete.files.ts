@@ -1,8 +1,11 @@
 import fs from 'fs';
 
-export const deleteFiles = ({imagesUploaded}: any) => {
-    console.log(imagesUploaded)
-    imagesUploaded.images.forEach((item: any) => {
-        fs.rmSync(item.path)
-    })
-}
+export const deleteFiles = ({ files }: { files: Express.Multer.File[] }) => {
+  files.forEach((file) => {
+    try {
+      fs.rmSync(file.path);
+    } catch (err) {
+      return err;
+    }
+  });
+};

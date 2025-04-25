@@ -1,15 +1,17 @@
 import { NextFunction, Response, Request } from 'express';
-import { IReqVerifyToken } from './verify.token';
 
-export const verifyRole = async(req: IReqVerifyToken, res: Response, next: NextFunction) => {
+export const verifyRole =
+  (allowedRoles: string[]) =>
+  (req: Request, res: Response, next: NextFunction) => {
     try {
-        const {authorizationRole} = req.auth
+      const { userRole } = req.body.payload;
 
-        if(authorizationRole !== 'HR') throw {msg: 'User Unauthorized', status: 401}
+      if (!allowedRoles.includes(userRole)) {
+        throw { msg: 'User Unauthorized', status: 401 };
+      }
 
-        next()
+      next();
     } catch (error) {
-        // Menuju ke Centralized Error
-        next(error)
+      next(error);
     }
-}
+  };

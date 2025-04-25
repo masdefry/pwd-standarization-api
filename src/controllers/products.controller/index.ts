@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { findProductsService } from '../../services/products.service';
+import { findProductsService } from '../../services/products.service/find.products.service';
 
 export const findProducts = async(req: Request, res: Response, next: NextFunction) => {
     try {
@@ -14,7 +14,7 @@ export const findProducts = async(req: Request, res: Response, next: NextFunctio
         res.status(200).json({
             error: false, 
             message: 'Get Products Success', 
-            data: {
+            products: {
                 page, 
                 limit,
                 offset, 
